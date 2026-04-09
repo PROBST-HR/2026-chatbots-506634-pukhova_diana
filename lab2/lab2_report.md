@@ -13,5 +13,5 @@ Author: Pukhova Diana 506634
 Lab: Lab2
 
 Date of create: 24.03.2026
-Date of finished: 14.04.2026
+Date of finished: 10.04.2026
 
