@@ -141,6 +141,10 @@ https://t.me/itmoftmi_pukhova_bot
 
 # 6. Выводы
 
+Демо-видео lab3_video1
+
+https://drive.google.com/drive/folders/1223Vz2_9H0CShPZ4wl1VyMuQjec5rZw6?usp=sharing
+
 ## Что получилось хорошо
 - Бот успешно задеплоен и работает 24/7
 - Реализована базовая система управления задачами
