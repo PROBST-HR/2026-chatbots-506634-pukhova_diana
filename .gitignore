@@ -1,0 +1,11 @@
+# node modules
+node_modules/
+
+# логи
+*.log
+
+# переменные окружения
+.env
+
+# системные файлы
+.DS_Store
