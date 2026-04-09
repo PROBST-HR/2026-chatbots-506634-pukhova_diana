@@ -14,22 +14,22 @@ from telegram.ext import (
     ConversationHandler,
 )
 
-# -------------------- Токен --------------------
+# ---------------- TOKEN ----------------
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
 if not TOKEN:
-    raise ValueError("BOT_TOKEN не найден в переменных окружения!")
+    raise ValueError("BOT_TOKEN not found!")
 
-# -------------------- Файлы --------------------
+# ---------------- FILES ----------------
 DATA_FILE = "tasks.json"
 EMP_FILE = "employees.csv"
 
-# -------------------- Состояния --------------------
+# ---------------- STATES ----------------
 TASK_TEXT, TASK_PRIORITY, TASK_REMINDER, TASK_DATETIME = range(4)
 EMPLOYEE_SEARCH = 10
 
-# -------------------- Работа с задачами --------------------
+# ---------------- DATA ----------------
 def load_data():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -41,7 +41,7 @@ def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-# -------------------- /start --------------------
+# ---------------- START ----------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         ["Добавить задачу", "Список задач"],
@@ -49,16 +49,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     await update.message.reply_text(
-        "Привет! Я бот 😊\n\nИспользуй кнопки ниже:",
+        "Привет! Я бот задач 😊",
         reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
-# -------------------- Добавление задачи --------------------
+# ---------------- ADD TASK ----------------
 async def add_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "Введите задачу:",
-        reply_markup=ReplyKeyboardRemove()
-    )
+    await update.message.reply_text("Введите задачу:", reply_markup=ReplyKeyboardRemove())
     return TASK_TEXT
 
 async def add_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -85,7 +82,7 @@ async def add_datetime(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["datetime"] = dt.isoformat()
         return await save_task(update, context)
     except:
-        await update.message.reply_text("❌ Неверный формат даты!")
+        await update.message.reply_text("Неверный формат даты!")
         return TASK_DATETIME
 
 async def save_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -102,13 +99,14 @@ async def save_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data.setdefault(user_id, []).append(task)
     save_data(data)
 
-    await update.message.reply_text("✅ Задача добавлена!")
+    await update.message.reply_text("Задача добавлена ✅")
     return ConversationHandler.END
 
-# -------------------- Список задач --------------------
+# ---------------- LIST TASKS ----------------
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = load_data()
     user_id = str(update.message.from_user.id)
+
     tasks = data.get(user_id, [])
 
     if not tasks:
@@ -124,10 +122,11 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(text)
 
-# -------------------- Удаление --------------------
+# ---------------- DELETE ----------------
 async def delete_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = load_data()
     user_id = str(update.message.from_user.id)
+
     tasks = data.get(user_id, [])
 
     if not tasks:
@@ -141,19 +140,20 @@ async def delete_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = load_data()
     user_id = str(update.message.from_user.id)
+
     tasks = data.get(user_id, [])
 
     try:
         idx = int(update.message.text) - 1
         removed = tasks.pop(idx)
         save_data(data)
-        await update.message.reply_text(f"🗑 Удалено: {removed['text']}")
+        await update.message.reply_text(f"Удалено: {removed['text']}")
     except:
-        await update.message.reply_text("❌ Ошибка")
+        await update.message.reply_text("Ошибка")
 
     return ConversationHandler.END
 
-# -------------------- CSV сотрудники --------------------
+# ---------------- EMPLOYEES (CSV) ----------------
 async def employees_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Введите имя или отдел:")
     return EMPLOYEE_SEARCH
@@ -187,7 +187,7 @@ async def employees_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
-# -------------------- MAIN --------------------
+# ---------------- MAIN ----------------
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -210,7 +210,9 @@ def main():
 
     emp_conv = ConversationHandler(
         entry_points=[CommandHandler("employees", employees_start)],
-        states={EMPLOYEE_SEARCH: [MessageHandler(filters.TEXT & ~filters.COMMAND, employees_search)]},
+        states={
+            EMPLOYEE_SEARCH: [MessageHandler(filters.TEXT & ~filters.COMMAND, employees_search)]
+        },
         fallbacks=[],
     )
 
@@ -220,7 +222,7 @@ def main():
     app.add_handler(delete_conv)
     app.add_handler(emp_conv)
 
-    print("🚀 Бот запущен!")
+    print("Bot started 🚀")
     app.run_polling()
 
 if __name__ == "__main__":
