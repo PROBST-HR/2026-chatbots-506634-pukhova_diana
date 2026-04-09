@@ -107,9 +107,9 @@ https://t.me/itmoftmi_pukhova_bot
 2. Улучшить UX команд (/help с примерами)
 3. Добавить уведомления о задачах
 
-![Bot](images/lab3_bot_is_alive_2).png)
+![Bot](images/lab3_bot_is_alive_2.png)
 
-![Bot](images/lab3_bot_priority).png)
+![Bot](images/lab3_bot_priority.png)
 
 ---
 
@@ -125,7 +125,7 @@ https://t.me/itmoftmi_pukhova_bot
 - Пользователи стали быстрее понимать состояние задач
 - Упростился контроль выполнения задач
 
-![Bot_Final](images/lab3_final_test).png)
+![Bot_Final](images/lab3_final_test.png)
 
 ## Новый фидбек
 После обновления пользователи отметили:
@@ -133,9 +133,9 @@ https://t.me/itmoftmi_pukhova_bot
 - Понятность статусов задач
 - Улучшенную структуру списка
 
-![Survey_2](images/lab3_survey_2_1).png)
+![Survey_2](images/lab3_survey_2_1.png)
 
-![Survey_2](images/lab3_survey_2_2).png)
+![Survey_2](images/lab3_survey_2_2.png)
 
 ---
 
