@@ -137,7 +137,13 @@ Date of finished: 10.04.2026
 
 ### 🖼 Скриншоты
 
-(Добавить сюда скриншоты работы бота)
+![lab1_pic1](images/lab1_pic1.png)
+
+![lab1_bot_py](images/lab1_bot_py.png)
+
+![lab1_requirements](images/lab1_requirements.png)
+
+![lab1_env](images/lab1_env.png)
 
 Примеры:
 - Главное меню
@@ -149,8 +155,7 @@ Date of finished: 10.04.2026
 
 ### 🎥 Видео-демо
 
-(Добавить ссылку)
-
+[Ссылка](https://drive.google.com/drive/folders/1223Vz2_9H0CShPZ4wl1VyMuQjec5rZw6?usp=sharing)
 
 ---
 
