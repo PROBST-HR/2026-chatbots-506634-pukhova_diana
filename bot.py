@@ -7,6 +7,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
+
 logger = logging.getLogger(__name__)
 
 TOKEN = os.getenv("BOT_TOKEN")
@@ -15,62 +16,74 @@ if not TOKEN:
     raise ValueError("BOT_TOKEN not found in environment variables")
 
 
-# простое хранилище задач (в памяти)
-user_tasks = {}
+# ====== Простое хранилище задач в памяти ======
+tasks = []
 
 
-# ---------- COMMANDS ----------
+def format_tasks():
+    if not tasks:
+        return "📭 Задач пока нет"
+
+    text = "📋 Ваши задачи:\n\n"
+    for i, t in enumerate(sorted(tasks, key=lambda x: x["priority"], reverse=True), 1):
+        text += f"{i}. {t['name']} (приоритет: {t['priority']})\n"
+    return text
+
+
+# ====== Команды ======
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "📋 Task Planner Bot\n\n"
+        "Привет! Я бот-планировщик задач 🚀\n\n"
         "Команды:\n"
-        "/add <задача>\n"
-        "/list\n"
-        "/clear"
+        "/add задача приоритет(1-3)\n"
+        "/list — список задач\n"
+        "/clear — очистить"
     )
 
 
-async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    task = " ".join(context.args)
+async def add_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        args = context.args
 
-    if not task:
-        await update.message.reply_text("Напиши задачу: /add купить кофе")
-        return
+        if len(args) < 2:
+            await update.message.reply_text("Используй: /add задача приоритет(1-3)")
+            return
 
-    user_tasks.setdefault(user_id, []).append(task)
-    await update.message.reply_text(f"Добавлено: {task}")
+        name = " ".join(args[:-1])
+        priority = int(args[-1])
+
+        if priority not in [1, 2, 3]:
+            await update.message.reply_text("Приоритет должен быть 1, 2 или 3")
+            return
+
+        tasks.append({"name": name, "priority": priority})
+
+        await update.message.reply_text(
+            f"✅ Добавлено: {name} (приоритет {priority})"
+        )
+
+    except Exception as e:
+        logger.error(e)
+        await update.message.reply_text("Ошибка при добавлении задачи")
 
 
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    tasks = user_tasks.get(user_id, [])
-
-    if not tasks:
-        await update.message.reply_text("Задач нет 📭")
-        return
-
-    text = "📋 Твои задачи:\n"
-    for i, t in enumerate(tasks, 1):
-        text += f"{i}. {t}\n"
-
-    await update.message.reply_text(text)
+    await update.message.reply_text(format_tasks())
 
 
-async def clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    user_tasks[user_id] = []
-    await update.message.reply_text("Все задачи удалены 🧹")
+async def clear_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    tasks.clear()
+    await update.message.reply_text("🧹 Все задачи удалены")
 
 
-# ---------- MAIN ----------
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("add", add))
+    app.add_handler(CommandHandler("add", add_task))
     app.add_handler(CommandHandler("list", list_tasks))
-    app.add_handler(CommandHandler("clear", clear))
+    app.add_handler(CommandHandler("clear", clear_tasks))
 
     logger.info("Bot started")
     app.run_polling()
