@@ -39,7 +39,7 @@ https://t.me/itmoftmi_pukhova_bot
 
 @itmoftmi_pukhova_bot
 
-(или приложен скриншот работы бота в Telegram)
+![Bot_is_alive](images/lab3_bot_is_alive1.png)
 
 ---
 
@@ -74,11 +74,10 @@ https://t.me/itmoftmi_pukhova_bot
 # 3. Сбор обратной связи
 
 ## Количество пользователей
-Бот был протестирован 3–5 пользователями.
+Бот был протестирован 3 пользователями.
 
 ## Способ сбора фидбека
 - Google Forms (анкета)
-- Личные сообщения в Telegram
 
 ## Примеры использования
 - Добавление задач с разными приоритетами
@@ -86,7 +85,7 @@ https://t.me/itmoftmi_pukhova_bot
 - Просмотр списка задач через /list
 
 ## Скриншоты отзывов
-(вставлены скриншоты переписки и Google Forms)
+![Survey_1](images/lab3_survey_1.png)
 
 ---
 
@@ -108,6 +107,10 @@ https://t.me/itmoftmi_pukhova_bot
 2. Улучшить UX команд (/help с примерами)
 3. Добавить уведомления о задачах
 
+![Bot](images/lab3_bot_is_alive_2).png)
+
+![Bot](images/lab3_bot_priority).png)
+
 ---
 
 # 5. Улучшения
@@ -122,11 +125,17 @@ https://t.me/itmoftmi_pukhova_bot
 - Пользователи стали быстрее понимать состояние задач
 - Упростился контроль выполнения задач
 
+![Bot_Final](images/lab3_final_test).png)
+
 ## Новый фидбек
 После обновления пользователи отметили:
 - Более удобное отслеживание прогресса
 - Понятность статусов задач
 - Улучшенную структуру списка
+
+![Survey_2](images/lab3_survey_2_1).png)
+
+![Survey_2](images/lab3_survey_2_2).png)
 
 ---
 
