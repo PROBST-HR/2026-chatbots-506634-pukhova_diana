@@ -240,7 +240,6 @@ def main():
     app.add_handler(delete_conv)
     app.add_handler(emp_conv)
 
-    app.job_queue.run_repeating(reminder_job, interval=60, first=0)
 
     print("🚀 Бот запущен!")
     app.run_polling()
