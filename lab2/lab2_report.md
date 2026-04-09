@@ -152,9 +152,9 @@ dotenv — работа с переменными окружения
 
 ### 🔹 Тестирование - Примеры запросов и ответов
 
-![Test employes](images/Lab2_test_employees.png)
+![Test employes](images/lab2_test_employees.png)
 
-![Test mistake](images/Lab2_test_mistake.png)
+![Test mistake](images/lab2_test_mistake.png)
 
 ---
 
@@ -162,9 +162,9 @@ dotenv — работа с переменными окружения
 
 https://drive.google.com/drive/folders/1223Vz2_9H0CShPZ4wl1VyMuQjec5rZw6?usp=sharing
 
-![Added_file](images/Lab2_added_file.png)
+![Added_file](images/lab2_added_file.png)
 
-![Employees_csv](images/Lab2_employees_csv.png)
+![Employees_csv](images/lab2_employees_csv.png)
 
 ## ⚠️ 7. Трудности и решения
 
