@@ -18,6 +18,9 @@ from telegram.ext import (
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
+if not TOKEN:
+    raise ValueError("BOT_TOKEN не найден в переменных окружения!")
+
 # -------------------- Файлы --------------------
 DATA_FILE = "tasks.json"
 EMP_FILE = "employees.csv"
@@ -29,13 +32,13 @@ EMPLOYEE_SEARCH = 10
 # -------------------- Работа с задачами --------------------
 def load_data():
     try:
-        with open(DATA_FILE, "r") as f:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except:
         return {}
 
 def save_data(data):
-    with open(DATA_FILE, "w") as f:
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 # -------------------- /start --------------------
@@ -44,14 +47,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ["Добавить задачу", "Список задач"],
         ["Удалить задачу", "Сотрудники"]
     ]
+
     await update.message.reply_text(
-        "Привет! Я бот 😊",
+        "Привет! Я бот 😊\n\nИспользуй кнопки ниже:",
         reply_markup=ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     )
 
 # -------------------- Добавление задачи --------------------
 async def add_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Введите задачу:", reply_markup=ReplyKeyboardRemove())
+    await update.message.reply_text(
+        "Введите задачу:",
+        reply_markup=ReplyKeyboardRemove()
+    )
     return TASK_TEXT
 
 async def add_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -66,7 +73,7 @@ async def add_priority(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def add_reminder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text.lower() == "да":
-        await update.message.reply_text("Введите дату и время: YYYY-MM-DD HH:MM")
+        await update.message.reply_text("Введите дату: YYYY-MM-DD HH:MM")
         return TASK_DATETIME
     else:
         context.user_data["datetime"] = None
@@ -78,7 +85,7 @@ async def add_datetime(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["datetime"] = dt.isoformat()
         return await save_task(update, context)
     except:
-        await update.message.reply_text("Неверный формат!")
+        await update.message.reply_text("❌ Неверный формат даты!")
         return TASK_DATETIME
 
 async def save_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -110,7 +117,7 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = ""
     for i, t in enumerate(tasks):
-        line = f"{i+1}. {t.get('text')} ({t.get('priority')})"
+        line = f"{i+1}. {t['text']} ({t['priority']})"
         if t.get("datetime"):
             line += f" ⏰ {t['datetime']}"
         text += line + "\n"
@@ -140,13 +147,13 @@ async def delete_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
         idx = int(update.message.text) - 1
         removed = tasks.pop(idx)
         save_data(data)
-        await update.message.reply_text(f"Удалено: {removed['text']}")
+        await update.message.reply_text(f"🗑 Удалено: {removed['text']}")
     except:
-        await update.message.reply_text("Ошибка")
+        await update.message.reply_text("❌ Ошибка")
 
     return ConversationHandler.END
 
-# -------------------- Работа с CSV --------------------
+# -------------------- CSV сотрудники --------------------
 async def employees_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Введите имя или отдел:")
     return EMPLOYEE_SEARCH
@@ -157,7 +164,6 @@ async def employees_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         df = pd.read_csv(EMP_FILE)
 
-        # поиск по имени или отделу
         result = df[
             df["name"].str.lower().str.contains(query) |
             df["department"].str.lower().str.contains(query)
@@ -176,36 +182,15 @@ async def employees_search(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             await update.message.reply_text(text)
 
-    except FileNotFoundError:
-        await update.message.reply_text("Файл employees.csv не найден")
     except Exception as e:
         await update.message.reply_text(f"Ошибка: {str(e)}")
 
     return ConversationHandler.END
 
-# -------------------- Напоминания --------------------
-async def reminder_job(context: ContextTypes.DEFAULT_TYPE):
-    data = load_data()
-    now = datetime.now()
-
-    for user_id, tasks in data.items():
-        for task in tasks:
-            if task.get("datetime") and not task.get("notified"):
-                task_time = datetime.fromisoformat(task["datetime"])
-                if now >= task_time:
-                    await context.bot.send_message(
-                        chat_id=int(user_id),
-                        text=f"🔔 Напоминание: {task['text']}"
-                    )
-                    task["notified"] = True
-
-    save_data(data)
-
 # -------------------- MAIN --------------------
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # задачи
     add_conv = ConversationHandler(
         entry_points=[CommandHandler("add", add_start)],
         states={
@@ -219,18 +204,13 @@ def main():
 
     delete_conv = ConversationHandler(
         entry_points=[CommandHandler("delete", delete_start)],
-        states={
-            1: [MessageHandler(filters.TEXT & ~filters.COMMAND, delete_task)]
-        },
+        states={1: [MessageHandler(filters.TEXT & ~filters.COMMAND, delete_task)]},
         fallbacks=[],
     )
 
-    # сотрудники
     emp_conv = ConversationHandler(
         entry_points=[CommandHandler("employees", employees_start)],
-        states={
-            EMPLOYEE_SEARCH: [MessageHandler(filters.TEXT & ~filters.COMMAND, employees_search)]
-        },
+        states={EMPLOYEE_SEARCH: [MessageHandler(filters.TEXT & ~filters.COMMAND, employees_search)]},
         fallbacks=[],
     )
 
@@ -239,7 +219,6 @@ def main():
     app.add_handler(add_conv)
     app.add_handler(delete_conv)
     app.add_handler(emp_conv)
-
 
     print("🚀 Бот запущен!")
     app.run_polling()
