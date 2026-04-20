@@ -143,8 +143,6 @@ Date of finished: 10.04.2026
 
 ![lab1_requirements](images/lab1_requirements.png)
 
-![lab1_env](images/lab1_env.png)
-
 Примеры:
 - Главное меню
 - Добавление задачи
